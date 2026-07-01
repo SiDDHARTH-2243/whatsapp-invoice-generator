@@ -5,7 +5,6 @@ import os
 
 app = Flask(__name__)
 
-# Create a folder to store PDFs
 PDF_DIR = "static_pdfs"
 os.makedirs(PDF_DIR, exist_ok=True)
 
@@ -29,11 +28,9 @@ def webhook():
     filepath = os.path.join(PDF_DIR, filename)
     generate_invoice(client_name, job_desc, amount, output_path=filepath)
 
-    # Bulletproof Production URL
     RENDER_BASE_URL = "https://whatsapp-invoice-generator-bvzh.onrender.com"
     public_pdf_url = f"{RENDER_BASE_URL}/pdf/{filename}"
 
-    # Build the Twilio response with the media attachment
     resp = MessagingResponse()
     msg = resp.message(f"Invoice successfully generated for {client_name}.")
     msg.media(public_pdf_url) 
