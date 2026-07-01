@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# Create a folder to store PDFs so we can serve them to Twilio later
+# Create a folder to store PDFs
 PDF_DIR = "static_pdfs"
 os.makedirs(PDF_DIR, exist_ok=True)
 
@@ -29,13 +29,9 @@ def webhook():
     filepath = os.path.join(PDF_DIR, filename)
     generate_invoice(client_name, job_desc, amount, output_path=filepath)
 
-    # Hardcoded Ngrok URL. 
-    # Critical Note: On the free tier, this URL changes every time you restart Ngrok.
-    # If you close Ngrok tomorrow, you MUST update this variable with your new URL.
-    # Automatically detects the current public URL (works on Ngrok OR Cloud Production)
-    public_base_url = f"{request.scheme}://{request.host}"
-    public_pdf_url = f"{public_base_url}/pdf/{filename}"
-    public_pdf_url = f"{NGROK_BASE_URL}/pdf/{filename}"
+    # Bulletproof Production URL
+    RENDER_BASE_URL = "https://whatsapp-invoice-generator-bvzh.onrender.com"
+    public_pdf_url = f"{RENDER_BASE_URL}/pdf/{filename}"
 
     # Build the Twilio response with the media attachment
     resp = MessagingResponse()
@@ -44,11 +40,9 @@ def webhook():
     
     return str(resp)
 
-# 5. Route to serve the PDF to Twilio
 @app.route("/pdf/<filename>")
 def serve_pdf(filename):
     return send_from_directory(PDF_DIR, filename)
 
 if __name__ == "__main__":
-    # Running directly bypasses your Flask PATH error
-    app.run(port=5000, debug=True, use_reloader=False)
+    app.run(port=5000, debug=True, use_reloader=False)loader=False)
