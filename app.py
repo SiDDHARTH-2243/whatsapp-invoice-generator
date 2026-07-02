@@ -8,6 +8,10 @@ app = Flask(__name__)
 PDF_DIR = "static_pdfs"
 os.makedirs(PDF_DIR, exist_ok=True)
 
+@app.route("/", methods=['GET'])
+def home():
+    return "WhatsApp Invoice Engine is Live and Running.", 200
+
 @app.route("/webhook", methods=['POST'])
 def webhook():
     incoming_msg = request.values.get('Body', '').strip()
